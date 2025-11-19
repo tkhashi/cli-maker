@@ -134,9 +134,10 @@ export function setupCLI(handler: AppHandler) {
           // Add root options
           addParams(cmd, 'program');
           
-          // If root has handler and NO subcommands, add action
-          // (If there are subcommands, the root action would prevent them from executing)
-          if (cmd.handlerName && cmd.subcommands.length === 0) {
+          // If root has handler, add action
+          // We allow root action even if there are subcommands, so that root options can be handled.
+          // Commander.js will only trigger this action if no subcommand is matched.
+          if (cmd.handlerName) {
              addAction(cmd, 'program');
           }
           
@@ -215,6 +216,20 @@ export function setupCLI(handler: AppHandler) {
           content += `    }\n`;
         });
       }
+
+      // Add validation for number types
+      const numberParams = cmd.parameters.filter(p => p.type === 'number');
+      if (numberParams.length > 0) {
+        numberParams.forEach(p => {
+          const name = toCamelCase(p.name);
+          const valToCheck = p.kind === 'argument' ? name : `options.${name}`;
+          
+          content += `    if (${valToCheck} !== undefined && isNaN(Number(${valToCheck}))) {\n`;
+          content += `      console.error('❌ Error: ${p.kind === 'argument' ? 'Argument' : 'Option'} "${p.name}" must be a number');\n`;
+          content += `      process.exit(1);\n`;
+          content += `    }\n`;
+        });
+      }
       
       content += `    const params = {\n`;
       
@@ -222,7 +237,7 @@ export function setupCLI(handler: AppHandler) {
       args.forEach(p => {
           const name = toCamelCase(p.name);
           const val = p.type === 'number' ? `Number(${name})` : name;
-           content += `      ${name}: ${val},\n`;
+          content += `      ${name}: ${val},\n`;
       });
       
       // Map options
