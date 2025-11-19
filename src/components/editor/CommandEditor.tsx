@@ -19,7 +19,7 @@ export function CommandEditor() {
 
   const command = selectedCommandId ? commands[selectedCommandId] : null;
 
-  const { register, control, handleSubmit, reset, watch } = useForm<FormData>({
+  const { register, control, handleSubmit, reset, watch, setValue } = useForm<FormData>({
     defaultValues: {
       name: '',
       description: '',
@@ -148,7 +148,10 @@ export function CommandEditor() {
                     <div className="col-span-2">
                         <select
                             {...register(`parameters.${index}.kind`)}
-                            onChange={handleSubmit(onSubmit)}
+                            onChange={(e) => {
+                              setValue(`parameters.${index}.kind`, e.target.value as 'argument' | 'option');
+                              handleSubmit(onSubmit)();
+                            }}
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-xs border p-1"
                         >
                             <option value="argument">Argument</option>
@@ -159,7 +162,10 @@ export function CommandEditor() {
                     <div className="col-span-2">
                         <select
                             {...register(`parameters.${index}.type`)}
-                            onChange={handleSubmit(onSubmit)}
+                            onChange={(e) => {
+                              setValue(`parameters.${index}.type`, e.target.value as 'string' | 'number' | 'boolean');
+                              handleSubmit(onSubmit)();
+                            }}
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-xs border p-1"
                         >
                             <option value="string">String</option>
@@ -173,7 +179,10 @@ export function CommandEditor() {
                             <input
                                 type="checkbox"
                                 {...register(`parameters.${index}.required`)}
-                                onChange={handleSubmit(onSubmit)}
+                                onChange={(e) => {
+                                  setValue(`parameters.${index}.required`, e.target.checked);
+                                  handleSubmit(onSubmit)();
+                                }}
                                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
                             />
                             <span className="text-xs text-gray-500">Req</span>
