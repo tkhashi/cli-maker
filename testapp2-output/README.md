@@ -1,6 +1,6 @@
-# testapp
+# testapp2
 
-これはテストapp
+Test app 2
 
 ## 📋 Table of Contents
 - [Quick Start](#-quick-start)
@@ -36,7 +36,33 @@ npm start -- [command] [args] [options]
 
 ## 📖 Command Reference
 
-No subcommands defined. This CLI has a single root command.
+### `first-subcmd`
+
+サブコマンド1
+
+**Arguments:**
+
+- `subargstr` (required) - 必須サブコマンドstr
+
+**Options:**
+
+- `-sab, --subargbool` (optional) - デフォルトtrue
+
+**Example:**
+
+```bash
+npm run dev -- first-subcmd <subargstr> --subargbool <value>
+```
+
+### `second-subcmd`
+
+サブコマンド2
+
+**Example:**
+
+```bash
+npm run dev -- second-subcmd
+```
 
 ## 🛠️ Development Guide
 
@@ -47,14 +73,14 @@ The current implementation in `src/handler.ts` is a **dummy implementation** for
 To add your actual business logic:
 
 1. Open `src/handler.ts`
-2. Find the handler method you want to implement (e.g., `handleCommand`)
+2. Find the handler method you want to implement (e.g., `firstSubCmd`)
 3. Replace the dummy console.log statements with your actual logic
 4. The `params` object contains all parsed arguments and options with proper types
 
 **Example:**
 
 ```typescript
-async handleCommand(params: Types.CommandParams): Promise<void> {
+async firstSubCmd(params: Types.FirstSubcmdParams): Promise<void> {
   // Your actual implementation here
   // params is fully typed based on your CLI definition
   
@@ -67,7 +93,7 @@ async handleCommand(params: Types.CommandParams): Promise<void> {
 ### Adding Error Handling
 
 ```typescript
-async handleCommand(params: Types.CommandParams): Promise<void> {
+async firstSubCmd(params: Types.FirstSubcmdParams): Promise<void> {
   try {
     // Your logic here
   } catch (error) {

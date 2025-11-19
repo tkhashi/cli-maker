@@ -193,7 +193,8 @@ export function CommandEditor() {
                         <input
                             {...register(`parameters.${index}.shortAlias`)}
                             onBlur={handleSubmit(onSubmit)}
-                            placeholder="-a"
+                            placeholder="v"
+                            title="短縮形（1文字、例: v → -v）"
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-xs border p-1"
                         />
                     </div>
@@ -219,6 +220,77 @@ export function CommandEditor() {
             {fields.length === 0 && (
                 <p className="text-sm text-gray-500 text-center py-4">No parameters defined.</p>
             )}
+          </div>
+        </div>
+
+        {/* Usage Examples */}
+        <div className="space-y-4 mt-8 pt-6 border-t border-gray-200">
+          <h3 className="text-sm font-medium text-gray-900">Usage Examples</h3>
+          <div className="bg-gray-50 rounded-md p-4 space-y-2">
+            {(() => {
+              const args = watch('parameters').filter(p => p.kind === 'argument');
+              const opts = watch('parameters').filter(p => p.kind === 'option');
+              const cmdName = watch('name') || 'command';
+              
+              // Build command path (simplified - just show command name for now)
+              const argsSyntax = args.map(a => 
+                a.required ? `<${a.name}>` : `[${a.name}]`
+              ).join(' ');
+              const optsSyntax = opts.length > 0 ? '[options]' : '';
+              
+              const syntax = `npm run dev -- ${cmdName} ${argsSyntax} ${optsSyntax}`.trim();
+              
+              // Generate concrete examples
+              const examples: string[] = [];
+              
+              // Example 1: Required args only
+              if (args.length > 0) {
+                const argValues = args.filter(a => a.required).map(a => {
+                  switch (a.type) {
+                    case 'number': return '123';
+                    case 'boolean': return 'true';
+                    default: return 'value';
+                  }
+                }).join(' ');
+                if (argValues) {
+                  examples.push(`npm run dev -- ${cmdName} ${argValues}`);
+                }
+              }
+              
+              // Example 2: With option (long form)
+              if (opts.length > 0) {
+                const argValues = args.filter(a => a.required).map(() => 'value').join(' ');
+                const opt = opts[0];
+                const optValue = opt.type === 'boolean' ? '' : ' value';
+                examples.push(`npm run dev -- ${cmdName} ${argValues} --${opt.name}${optValue}`.trim());
+              }
+              
+              // Example 3: With option (short form)
+              if (opts.length > 0 && opts[0].shortAlias) {
+                const argValues = args.filter(a => a.required).map(() => 'value').join(' ');
+                const opt = opts[0];
+                const optValue = opt.type === 'boolean' ? '' : ' value';
+                examples.push(`npm run dev -- ${cmdName} ${argValues} -${opt.shortAlias}${optValue}`.trim());
+              }
+              
+              return (
+                <>
+                  <div className="text-xs text-gray-600 font-mono bg-white p-2 rounded border border-gray-200">
+                    {syntax}
+                  </div>
+                  {examples.length > 0 && (
+                    <div className="space-y-1 mt-2">
+                      <p className="text-xs text-gray-500">Examples:</p>
+                      {examples.map((ex, i) => (
+                        <div key={i} className="text-xs text-gray-700 font-mono bg-white p-2 rounded border border-gray-200">
+                          {ex}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       </form>

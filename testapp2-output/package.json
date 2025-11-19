@@ -1,11 +1,11 @@
 {
-  "name": "testapp",
+  "name": "testapp2",
   "version": "0.0.1",
-  "description": "これはテストapp",
+  "description": "Test app 2",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "testapp": "./dist/index.js"
+    "testapp2": "./dist/index.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",

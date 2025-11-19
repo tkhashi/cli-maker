@@ -134,8 +134,9 @@ export function setupCLI(handler: AppHandler) {
           // Add root options
           addParams(cmd, 'program');
           
-          // If root has handler and no subcommands (or we want default action), add action
-          if (cmd.handlerName) {
+          // If root has handler and NO subcommands, add action
+          // (If there are subcommands, the root action would prevent them from executing)
+          if (cmd.handlerName && cmd.subcommands.length === 0) {
              addAction(cmd, 'program');
           }
           
@@ -143,15 +144,22 @@ export function setupCLI(handler: AppHandler) {
           cmd.subcommands.forEach(childId => buildCommand(childId, 'program'));
       } else {
           const varName = `cmd_${cmd.id.replace(/-/g, '_')}`;
-          const args = cmd.parameters.filter(p => p.kind === 'argument')
-            .map(p => p.required ? `<${p.name}>` : `[${p.name}]`)
-            .join(' ');
-            
-          content += `  const ${varName} = ${parentVar}.command('${cmd.name}${args ? ' ' + args : ''}');\n`;
+          
+          // Define command without inline arguments
+          content += `  const ${varName} = ${parentVar}.command('${cmd.name}');\n`;
           if (cmd.description) {
               content += `  ${varName}.description('${cmd.description}');\n`;
           }
           
+          // Add arguments using .argument()
+          const args = cmd.parameters.filter(p => p.kind === 'argument');
+          args.forEach(arg => {
+            const argDef = arg.required ? `<${arg.name}>` : `[${arg.name}]`;
+            const desc = arg.description || '';
+            content += `  ${varName}.argument('${argDef}', '${desc}');\n`;
+          });
+          
+          // Add options
           addParams(cmd, varName);
           
           if (cmd.handlerName) {
