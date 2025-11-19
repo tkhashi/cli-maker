@@ -123,7 +123,15 @@ export function setupCLI(handler: AppHandler) {
       
       if (cmdId === rootId) {
           // Root command configuration (already done name/desc)
-          // Add root options/args
+          // Add root arguments using .argument()
+          const args = cmd.parameters.filter(p => p.kind === 'argument');
+          args.forEach(arg => {
+            const argDef = arg.required ? `<${arg.name}>` : `[${arg.name}]`;
+            const desc = arg.description || '';
+            content += `  program.argument('${argDef}', '${desc}');\n`;
+          });
+          
+          // Add root options
           addParams(cmd, 'program');
           
           // If root has handler and no subcommands (or we want default action), add action
@@ -174,6 +182,32 @@ export function setupCLI(handler: AppHandler) {
       const actionArgs = [...argNames, 'options'].join(', ');
       
       content += `  ${varName}.action(async (${actionArgs}) => {\n`;
+      
+      // Add validation for required arguments
+      const requiredArgs = args.filter(a => a.required);
+      if (requiredArgs.length > 0) {
+        requiredArgs.forEach(arg => {
+          const name = toCamelCase(arg.name);
+          content += `    if (!${name}) {\n`;
+          content += `      console.error('❌ Error: Required argument "${arg.name}" is missing');\n`;
+          content += `      console.error('\\nUsage: ${cmd.name} <${arg.name}>');\n`;
+          content += `      process.exit(1);\n`;
+          content += `    }\n`;
+        });
+      }
+      
+      // Add validation for required options
+      const requiredOpts = cmd.parameters.filter(p => p.kind === 'option' && p.required);
+      if (requiredOpts.length > 0) {
+        requiredOpts.forEach(opt => {
+          const name = toCamelCase(opt.name);
+          content += `    if (options.${name} === undefined) {\n`;
+          content += `      console.error('❌ Error: Required option "--${opt.name}" is missing');\n`;
+          content += `      process.exit(1);\n`;
+          content += `    }\n`;
+        });
+      }
+      
       content += `    const params = {\n`;
       
       // Map arguments
@@ -230,17 +264,23 @@ export class DummyHandler implements AppHandler {
     const paramType = `Types.${toPascalCase(cmd.name)}Params`;
     
     content += `  async ${cmd.handlerName}(params: ${paramType}): Promise<void> {
-    console.log('\\n${'='.repeat(50)}');
-    console.log('🚀 ${cmd.handlerName} called');
-    console.log('${'='.repeat(50)}');
+    console.log('\\n${'='.repeat(60)}');
+    console.log('🚀 Command: ${cmd.name}');
+    console.log('📍 Handler: ${cmd.handlerName}');
+    console.log('${'='.repeat(60)}');
     console.log('📦 Parameters:');
     console.log(JSON.stringify(params, null, 2));
-    console.log('${'='.repeat(50)}');
+    console.log('${'='.repeat(60)}');
     
     // TODO: Implement your business logic here
     // This is a dummy implementation for testing
     
-    console.log('✅ Command executed successfully (dummy implementation)\\n');
+    console.log('✅ Command executed successfully (dummy implementation)');
+    console.log('');
+    console.log('💡 Next steps:');
+    console.log('   - Implement business logic in src/handler.ts');
+    console.log('   - Replace this dummy output with actual functionality');
+    console.log('${'='.repeat(60)}\\n');
   }
 
 `;

@@ -9,30 +9,10 @@ import { AppHandler } from './interfaces.js';
 import * as Types from './types.js';
 
 export class DummyHandler implements AppHandler {
-  async main(params: Types.MyappParams): Promise<void> {
+  async testhandler(params: Types.TestappParams): Promise<void> {
     console.log('\n============================================================');
-    console.log('🚀 Command: myapp');
-    console.log('📍 Handler: main');
-    console.log('============================================================');
-    console.log('📦 Parameters:');
-    console.log(JSON.stringify(params, null, 2));
-    console.log('============================================================');
-    
-    // TODO: Implement your business logic here
-    // This is a dummy implementation for testing
-    
-    console.log('✅ Command executed successfully (dummy implementation)');
-    console.log('');
-    console.log('💡 Next steps:');
-    console.log('   - Implement business logic in src/handler.ts');
-    console.log('   - Replace this dummy output with actual functionality');
-    console.log('============================================================\n');
-  }
-
-  async handleDeploy(params: Types.DeployParams): Promise<void> {
-    console.log('\n============================================================');
-    console.log('🚀 Command: deploy');
-    console.log('📍 Handler: handleDeploy');
+    console.log('🚀 Command: testapp');
+    console.log('📍 Handler: testhandler');
     console.log('============================================================');
     console.log('📦 Parameters:');
     console.log(JSON.stringify(params, null, 2));

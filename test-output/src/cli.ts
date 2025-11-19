@@ -18,6 +18,11 @@ export function setupCLI(handler: AppHandler) {
   cmd_deploy_cmd.description('Deploy the application');
   cmd_deploy_cmd.option('-v, --verbose ', 'Verbose output');
   cmd_deploy_cmd.action(async (environment, options) => {
+    if (!environment) {
+      console.error('❌ Error: Required argument "environment" is missing');
+      console.error('\nUsage: deploy <environment>');
+      process.exit(1);
+    }
     const params = {
       environment: environment,
       verbose: options.verbose,
