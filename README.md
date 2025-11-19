@@ -4,9 +4,9 @@
 
 ## 🎬 デモ動画
 
-CLIツールの作成からダウンロードまでの流れ（約30秒）
+CLIツールの作成からダウンロードまでの流れ
 
-![Demo Video](/Users/kazuhiro.takahashi/Documents/.gemini/antigravity/brain/32f2fe5e-448d-4ed8-bc00-8b928e9516ed/artifacts/cli_maker_demo.mp4)
+![Demo Video]()
 
 ## 🚀 クイックスタート
 
